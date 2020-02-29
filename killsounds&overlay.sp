@@ -214,7 +214,7 @@ PlaySounds(int entity)
 				for(new a = 1; a <= MaxClients; a++)
 				{
 					if(IsClientInGame(a))
-        				EmitSoundToClient(entity,g_szFristBloodSounds[i]);
+        				EmitSoundToClient(a,g_szFristBloodSounds[i]);
 				}
 			}
 			ShowOverlay(entity, Killone, 2.5);
