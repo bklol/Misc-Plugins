@@ -9,7 +9,7 @@
 #define Killfour "overlays/kill/kill_4"
 #define Killfive "overlays/kill/kill_5"
 
-int AllKills =0;
+int TotKills =0;
 int g_Kills[MAXPLAYERS + 1];
 
 int g_szAboutStrat = 0;
@@ -50,6 +50,8 @@ char g_szUnstoppableSounds[10][PLATFORM_MAX_PATH + 1];
 
 char g_szWickedSickSounds[10][PLATFORM_MAX_PATH + 1];
 
+ConVar IsEnemies;
+
 
 public OnPluginStart()
 {
@@ -65,6 +67,7 @@ public void OnMapStart()
 	PrecacheDecalAnyDownload(Killthree);
 	PrecacheDecalAnyDownload(Killfour);
 	PrecacheDecalAnyDownload(Killfive);
+	IsEnemies = FindConVar("mp_teammates_are_enemies");
 }
 
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -76,10 +79,10 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 			g_Kills[i] = 0;
         }
     }
-	CreateTimer(0.1,StartSounds);
-	AllKills=0;
+	CreateTimer(0.1,Ssound);
+	TotKills=0;
 }
-public Action StartSounds(Handle timer)
+public Action Ssound(Handle timer)
 {
 	int i=GetRandomInt(0,g_szStrat-1);
 	for(new a = 1; a <= MaxClients; a++)
@@ -191,11 +194,16 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
     int victim = GetClientOfUserId(GetEventInt(event, "userid"));
     int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	
     g_Kills[victim] = 0;
-    if(attacker > 0 && IsClientInGame(attacker) && attacker != victim){
+    if(attacker > 0 && IsClientInGame(attacker) && attacker != victim)
+	{
+	if(GetClientTeam(victim) == GetClientTeam(attacker) && IsEnemies.IntValue == 0)
+		return;
+	else
 		g_Kills[attacker]++;
 	}
-	AllKills++;
+	TotKills++;
 	PlaySounds(attacker);
 }
 
@@ -208,7 +216,7 @@ PlaySounds(int entity)
 		case 1:
 		{
 			int i=GetRandomInt(0,g_szFristBlood-1);
-			if(AllKills == 1)
+			if(TotKills == 1)
 			{
 				
 				for(new a = 1; a <= MaxClients; a++)
