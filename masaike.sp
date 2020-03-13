@@ -19,6 +19,8 @@ public OnPluginStart()
 	RegAdminCmd("sm_oodel", Command_DecalDel, ADMFLAG_KICK, "Del map decals");
     //HookEvent("bullet_impact",Decal_BulletImpact);
 	SQL_MakeConnection();
+	AddFileToDownloadsTable("materials/decals/custom/example/neko.vmt");
+	AddFileToDownloadsTable("materials/decals/custom/example/neko.vtf");
 	
 }
 public Action Command_Decal(int client,int args)
