@@ -21,13 +21,15 @@ public OnPluginStart()
 	SQL_MakeConnection();
 	AddFileToDownloadsTable("materials/decals/custom/example/neko.vmt");
 	AddFileToDownloadsTable("materials/decals/custom/example/neko.vtf");
-	
+
 }
+
 public Action Command_Decal(int client,int args)
 {
 	painter[client]=true;
 	PrintToChat(client,"瞄准后按E贴图");
 }
+
 public Action Command_DecalDel(int client,int args)
 {
 	char szQuery[512];
@@ -35,24 +37,28 @@ public Action Command_DecalDel(int client,int args)
 	g_dDatabase.Query(SQL_CheckForErrors, szQuery);
 	PrintToChat(client,"已从数据库中删除所有当前地图Decals落点");
 }
+
 public Action Command_RemoveDecal(int client,int args)
 {
 	PrintToChatAll("%i",decals);
-	decl Float:position[3];
+	float position[3];
 	for (new i=0; i<decals; ++i) {
 		GetArrayArray(adt_decal_position, i, _:position);
 		PrintToChatAll("%f,%f,%f",position[0],position[1],position[2]);
 	}
 }
+
 public void OnMapStart()
 {
 	ClearArray(adt_decal_position);
 	GetCurrentMap(szMap, 128);
 	GetDecal();
 }
+
 public OnMapEnd() {
 	ClearArray(adt_decal_position);
 }
+
 /**
 public Action Decal_BulletImpact(Handle:event,const String:name[],bool:dontBroadcast)
 {
@@ -113,11 +119,10 @@ void paint(int client)
 	char szQuery[512];
 	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `decals` (`map`,`x`,`y`,`z`) VALUES ('%s','%s','%s','%s')",szMap,posx,posy,posz);
 	g_dDatabase.Query(SQL_CheckForErrors, szQuery);
-	UpdateRow();
 	painter[client]=false;
 	PrintToChat(client,"贴图落点已上传");
-	
 }
+
 void SQL_MakeConnection()
 {
 	if (g_dDatabase != null)
@@ -130,12 +135,14 @@ void SQL_MakeConnection()
 	}
 	
 }
+
 void UpdateRow()
 {
 	char buffer[128];
 	FormatEx(buffer, sizeof(buffer), "SELECT COUNT(*) count FROM decals WHERE `map` = '%s'",szMap);
 	g_dDatabase.Query(HowManyRow, buffer, 0, DBPrio_High);
 }
+
 void GetDecal()
 {
 	char buffer[128];
@@ -146,7 +153,7 @@ void GetDecal()
 
 public void LoadDecalsCallback( Database db, DBResultSet results, const char[] error, any data )
 {
-	decl Float:position[3];
+	float position[3];
 	char pos[12];
 	while(results.FetchRow())
 	{
@@ -159,6 +166,7 @@ public void LoadDecalsCallback( Database db, DBResultSet results, const char[] e
 		PushArrayArray(adt_decal_position,_:position);
 	}
 }
+
 public void HowManyRow(Database db, DBResultSet results, const char[] error, any data)
 {
 	if(results.FetchRow())
@@ -166,9 +174,10 @@ public void HowManyRow(Database db, DBResultSet results, const char[] error, any
 		decals = results.FetchInt(0);
 	}
 }
+
 public OnClientPostAdminCheck(client) {
 	painter[client]=false;
-	decl Float:position[3];
+	float position[3];
 	for (new i=0; i<decals; ++i) {
 		GetArrayArray(adt_decal_position, i, _:position);
 		TE_Start("BSP Decal");
@@ -180,7 +189,7 @@ public OnClientPostAdminCheck(client) {
 }
 public void SQL_CheckForErrors(Database db, DBResultSet results, const char[] error, any data)
 {	
-	
+	UpdateRow();
 	if (!StrEqual(error, ""))
 	{
 		LogError("Databse error, %s", error);
