@@ -24,8 +24,8 @@ public OnClientPutInServer(client)
 
 public Event_WeaponDrop(client, weapon)
 {
-	if(InWarmup()){
-    CreateTimer(0.1, removeWeapon, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);}
+	if(InWarmup())
+		CreateTimer(0.1, removeWeapon, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action:removeWeapon(Handle:hTimer, any:iWeaponRef)
