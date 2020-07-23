@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>WebSocket</title>
+
+<style>
+ html,body{font:normal 0.9em arial,helvetica;}
+ #log {width:440px; height:200px; border:1px solid #7F9DB9; overflow:auto;}
+ #msg {width:330px;}
+ #nick {width:130px;}
+</style>
+
+<script>
+var socket;
+
+function init(){
+  // Change to your server's ip.
+  var host = "ws://192.168.1.100:12345/";
+  try{
+    if(!window.WebSocket)
+        socket = new MozWebSocket(host);
+    else
+        socket = new WebSocket(host);
+    log('WebSocket - status '+socket.readyState);
+    socket.onopen    = function(msg){ log("Welcome - status "+this.readyState); };
+    socket.onmessage = function(msg){ log("Received: "+msg.data); };
+    socket.onerror = function(msg){ log("Error!"); };
+    socket.onping = function(msg){ log("Received ping: "+msg.data); };
+    socket.onpong = function(msg){ log("Received pong: "+msg.data); };
+    socket.onclose   = function(msg){ log("Disconnected - status "+this.readyState+" Code: "+msg.code+". Reason:"+msg.reason+" - wasClean: "+msg.wasClean); };
+  }
+  catch(ex){ log('Error: '+ex); }
+  $("msg").focus();
+}
+
+function send(){
+  if(socket.readyState != 1) { alert("Socket not ready yet."); return; }
+  var txt,nick;
+  nick = $("nick");
+  if(!nick.value){ alert("Nickname can not be empty"); return; }
+  txt = $("msg");
+  if(!txt.value){ alert("Message can not be empty"); return; }
+  var msg = nick.value+": "+txt.value
+  txt.value="";
+  txt.focus();
+  try{ socket.send(msg); log('Sent: '+msg); } catch(ex){ log(ex); }
+}
+function quit(){
+  log("Goodbye!");
+  socket.close(1000);
+  socket=null;
+}
+
+// Utilities
+function $(id){ return document.getElementById(id); }
+function log(msg){ $("log").innerHTML+="<br>"+msg; }
+function onkey(event){ if(event.keyCode==13){ send(); } }
+</script>
+
+</head>
+<body onload="init()">
+ <h3>Example websocket chat</h3>
+ <div id="log"></div>
+ Nickname: <input id="nick" type="textbox" /><br />
+ Message:  <input id="msg" type="textbox" onkeypress="onkey(event)"/>
+ <button onclick="send()">Send</button>
+ <button onclick="quit()">Quit</button>
+</body>
+</html>
