@@ -29,6 +29,7 @@ public void CreateDeathEvent(int victim, int attacker, char[] sWeapon, bool head
 		event.FireToClient(victim);
 	if(IsValidClient(attacker) && victim != attacker)
 		event.FireToClient(attacker);
+	delete event; //cause memory leak ？
 }
 
 stock bool IsValidClient(int client)
