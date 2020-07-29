@@ -31,7 +31,7 @@ public Action round_end(Event event, const char[] name, bool dontBroadcast)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidClient(i) && IsPlayerAlive(i) && IsFW[i])
+		if (IsValidClient(i) && IsFW[i])
 			GiveMoney(i);
 	}
 }
