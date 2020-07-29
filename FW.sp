@@ -23,15 +23,12 @@ public void OnPluginStart()
 		if (IsClientInGame(i))
 			OnClientPostAdminCheck(i);
 	}
-	HookEvent("round_prestart", round_prestart);
+	HookEvent("round_end", round_end);
 }
 
-public Action round_prestart(Event event, const char[] name, bool dontBroadcast)
+public Action round_end(Event event, const char[] name, bool dontBroadcast)
 {
-	if (GameRules_GetProp("m_bWarmupPeriod"))
-    {
-		return;
-	}
+
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidClient(i) && IsPlayerAlive(i) && IsFW[i])
@@ -42,7 +39,7 @@ public Action round_prestart(Event event, const char[] name, bool dontBroadcast)
 void GiveMoney(int client)
 {
 	SetEntProp(client, Prop_Send, "m_iAccount", GetEntProp(client, Prop_Send, "m_iAccount") + 8888);
-	PrintToChat(client,"您由于是富翁，当局经济 + 8888");
+	PrintToChat(client,"您由于是富翁，经济 + 8888");
 }
 
 public Action fw(client, args)
@@ -91,7 +88,7 @@ public void SQL_FetchUser_CB(Database db, DBResultSet results, const char[] erro
 		int iStamp = results.FetchInt(0);
 		int iDaysLeft = (iStamp - GetTime()) / 86400;
 		
-		if (iDaysLeft > 0 || iStamp == -1)
+		if (iDaysLeft >= 0 || iStamp == -1)
 		{
 			g_iDaysLeft[iClient] = iDaysLeft;
 			IsFW[iClient] = true;
@@ -102,6 +99,7 @@ public void SQL_FetchUser_CB(Database db, DBResultSet results, const char[] erro
 			FormatEx(szQuery, sizeof(szQuery), "DELETE FROM `fw_user` WHERE `authid` = '%s'",  g_szAuth[iClient]);
 			g_dDatabase.Query(SQL_CheckForErrors, szQuery, GetClientSerial(iClient));
 			g_iDaysLeft[iClient] = 0;
+			PrintToChat(iClient,"您的富翁卡到期了哦");
 		}
 	}
 	g_iDaysLeft[iClient] = 0;
@@ -116,7 +114,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 		{
 			char query[512];
 			char szQuery[512];
-			Format(query, sizeof(query),"SELECT * FROM `fw_code` WHERE code`='%s'",szArgs);
+			Format(query, sizeof(query),"SELECT `day` FROM `fw_code` WHERE `code`='%s'",szArgs);
 			g_dDatabase.Query(Sql_CallBack,query,client);
 			
 			FormatEx(szQuery, sizeof(szQuery), "DELETE FROM `fw_code` WHERE `code` = '%s'",szArgs);
@@ -132,27 +130,27 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 
 public void Sql_CallBack(Database db, DBResultSet results, const char[] error, any data)
 {
+	
 	int client = data;
+	
 	if (results.FetchRow())
 	{
 		int iDays = results.FetchInt(0);
-		int now = GetTime();
 		if(iDays > 0)
 		{
 			char szStamp[512];
 			char szNewStamp[512];
-			Format(szStamp, sizeof(szStamp), "%i", now + (iDays * 86400));
-			Format(szNewStamp, sizeof(szNewStamp), "%i", now + ((iDays + g_iDaysLeft[client]) * 86400));
-		
+			Format(szStamp, sizeof(szStamp), "%i", GetTime()+ (iDays * 86400));
+			Format(szNewStamp, sizeof(szNewStamp), "%i",  GetTime()+ ((iDays + g_iDaysLeft[client]) * 86400));
 			PrintToChat(client, "激活 %i 天\x02%N \x01 富翁卡 ...",iDays,client);
 			char szQuery[512];
 			if (IsFW[client])
 			{
-				FormatEx(szQuery, sizeof(szQuery), "UPDATE `fw_user` SET `time` = '%s' WHERE `authId` = '%s'", szNewStamp , g_szAuth[client]);
+				FormatEx(szQuery, sizeof(szQuery), "UPDATE `fw_user` SET `time` = '%s' WHERE `authid` = '%s'", szNewStamp , g_szAuth[client]);
 			}
 			else
 			{
-				FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `fw_user` (`authId`, `time`) VALUES ('%s', '%s' )",g_szAuth[client], szStamp);
+				FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `fw_user` (`authid`, `time`) VALUES ('%s', '%s' )",g_szAuth[client], szStamp);
 			}
 			g_dDatabase.Query(SQL_CheckForErrors, szQuery, GetClientSerial(client));
 			SQL_FetchUser(client);
@@ -164,11 +162,11 @@ public void Sql_CallBack(Database db, DBResultSet results, const char[] error, a
 			char szQuery[512];
 			if (IsFW[client])
 			{
-				FormatEx(szQuery, sizeof(szQuery), "UPDATE `fw_user` SET `time` = '%i' WHERE `authId` = '%s'",  iDays, g_szAuth[client]);			
+				FormatEx(szQuery, sizeof(szQuery), "UPDATE `fw_user` SET `time` = '%s' WHERE `authid` = '%s'",  iDays, g_szAuth[client]);			
 			}
 			else
 			{
-				FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `fw_user` (`authId`, `time`) VALUES ('%s', '%i')",g_szAuth[client],iDays);
+				FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `fw_user` (`authid`, `time`) VALUES ('%s', '%s')",g_szAuth[client],iDays);
 			}
 			g_dDatabase.Query(SQL_CheckForErrors, szQuery, GetClientSerial(client));
 			SQL_FetchUser(client);
