@@ -18,33 +18,33 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	if (damagetype & DMG_FALL)
 		return Plugin_Continue;
 		
-    if(IsTeamMate(victim,attacker))
+    if(GetClientTeam(victim) == GetClientTeam(attacker) && IsValidClient(victim) && IsValidClient(attacker))
     {
 		char sWeapon[64];
 		GetEdictClassname( inflictor, sWeapon, sizeof( sWeapon ) );
 
 		if( StrEqual( sWeapon, "inferno" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 
 		if( StrEqual( sWeapon, "hegrenade_projectile" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 		
 		if( StrEqual( sWeapon, "weapon_knife_t" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 		
 		if( StrEqual( sWeapon, "weapon_knife_ct" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 		
 		if( StrEqual( sWeapon, "decoy_projectile" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 		
 		if( StrEqual( sWeapon, "smokegrenade_projectile" ) ) {
-        return Plugin_Continue;
+			return Plugin_Continue;
 		}
 		
 		return Plugin_Handled;
@@ -56,14 +56,6 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 public void OnClientPutInServer(int client)
 {
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-}
-
-stock bool IsTeamMate(int client,int client2)
-{
-    if(GetClientTeam(client) == GetClientTeam(client2))
-        return true;
-    else
-        return false;
 }
 
 stock bool IsValidClient( client )
