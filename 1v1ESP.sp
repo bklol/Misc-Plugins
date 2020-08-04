@@ -75,9 +75,9 @@ void TriggerEsp()
 public Action ESP(Handle timer)
 {
 	if (count == 3)
-    {
+	{
 		for(int client = 1; client <= MaxClients; ++client)
-			{
+		{
 			if (IsValidClient(client) && IsPlayerAlive(client))
 				SetEntPropFloat(client, Prop_Send, "m_flDetectedByEnemySensorTime", 9999999.0);
 		}
