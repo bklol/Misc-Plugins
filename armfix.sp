@@ -29,26 +29,7 @@ public void OnPluginStart()
 	DHookAddParam(Dhook_PrecacheModel, HookParamType_CharPtr);
 	DHookAddParam(Dhook_PrecacheModel, HookParamType_Bool);
 	DHookRaw(Dhook_PrecacheModel, false, addr);
-	HookEvent("player_spawn", Event_PlayerSpawn);
-}
-
-public void OnMapStart()
-{
-	PrecacheModel("models/weapons/ct_arms.mdl");
-	PrecacheModel("models/weapons/t_arms.mdl");
-}
-
-public Action Event_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsValidClient(client))
-		return Plugin_Continue;
 	
-	char temp[2];
-	GetEntPropString(client, Prop_Send, "m_szArmsModel", temp, sizeof(temp));
-	if(temp[0])
-		SetEntPropString(client, Prop_Send, "m_szArmsModel", "");
-	return Plugin_Continue;
 }
 
 stock Address fnCreateEngineInterface(GameData gameConf, char[] sKey, Address pAddress = Address_Null) 
@@ -113,29 +94,32 @@ public MRESReturn WeaponDHookOnPrecacheModel(Handle hReturn, Handle hParams)
     // Gets model from parameters
 	char buffer[128];
 	DHookGetParamString(hParams, 1, buffer, sizeof(buffer));
-   
-    if (!strncmp(buffer, "models/weapons/v_models/arms/glove_hardknuckle/", 47, false))
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }
-    if (!strncmp(buffer, "models/weapons/v_models/arms/glove_fingerless/", 46, false))
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }
-    if (!strncmp(buffer, "models/weapons/v_models/arms/glove_fullfinger/", 46, false))
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }
-    if (!strncmp(buffer, "models/weapons/v_models/arms/anarchist/", 39, false))
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }
-
-    // Skip the hook
+	if (!strncmp(buffer, "models/weapons/v_models/arms/glove_hardknuckle/", 47, false))
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+	if (!strncmp(buffer, "models/weapons/v_models/arms/glove_fingerless/", 46, false))
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+	if (!strncmp(buffer, "models/weapons/v_models/arms/glove_fullfinger/", 46, false))
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+	if (!strncmp(buffer, "models/weapons/v_models/arms/anarchist/", 39, false))
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+	if(StrContains(buffer, "error") != -1)
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+		// Skip the hook
 	return MRES_Ignored;
 }
 
