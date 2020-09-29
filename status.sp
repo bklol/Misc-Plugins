@@ -49,8 +49,6 @@ public void ConnTypeCallBack(HTTPResponse response, int client)
 		LogError("Http Get No response");
 		return;
 	}
-	char sData[2048];
-	response.Data.ToString(sData, sizeof(sData), JSON_INDENT(3)); 
 	ParseData (view_as<JSONObject>(response.Data),client);
 }
 
@@ -80,18 +78,18 @@ public Action ExecuteStringCommand(int client, char sCommandString[512])
 		TrimString(message);
 		if(StrContains(message, "status") == 0 || StrEqual(message, "status", false))
         {
-			PrintToConsole(client,"Plugin Auth NEKO, AKA BKlol"); 
+			PrintToConsole(client,"Plugin Auth NEKO, AKA BKlol");
+			PrintToConsole(client, "---------------------------------------------------------------------------------------");
 			for (int i = 1; i <= MaxClients; i++)
 			{
-				PrintToConsole(client, "---------------------------------------------------------------------------------------");
 				if (IsValidClient(i))
 				{
 					char buffer[1280];
 					Format(buffer,sizeof(buffer), "32ID:%s  64ID:%s  在线模式:%s  玩家ID:%N ",g_szAuth2[i], g_szAuth64[i], ConnType[i], i);
 					PrintToConsole(client, buffer); 
-				}
-				PrintToConsole(client, "---------------------------------------------------------------------------------------");
+				}				
 			}
+			PrintToConsole(client, "---------------------------------------------------------------------------------------");
 			return Plugin_Handled;
         }
 		
