@@ -26,11 +26,12 @@ public void OnPluginStart()
 
 public void OnClientPostAdminCheck(int client)
 {
-	if (!GetClientAuthId(client, AuthId_Steam2, g_szAuth2[client], sizeof(g_szAuth2))|| !GetClientAuthId(client, AuthId_SteamID64, g_szAuth64[client], sizeof(g_szAuth64)))
-	{
-		KickClient(client, "Verification problem, Please reconnect");
+	if(!IsValidClient(client))
 		return;
-	}
+
+	GetClientAuthId(client, AuthId_Steam2, g_szAuth2[client], sizeof(g_szAuth2));
+	GetClientAuthId(client, AuthId_SteamID64, g_szAuth64[client], sizeof(g_szAuth64));
+	
 	char endpoint[128];
 	Format(endpoint,sizeof(endpoint),"isOnline?steamIds=%s",g_szAuth64[client]);
 	HTTPClient httpClient = new HTTPClient("http://csgo.wanmei.com/api-user");
