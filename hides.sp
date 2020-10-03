@@ -5,7 +5,6 @@
 #include <sdkhooks>
 #include <sdktools>
 
-
 bool g_bIsHiding[MAXPLAYERS+1];
 
 public Plugin myinfo = {
@@ -18,17 +17,12 @@ public Plugin myinfo = {
 
 public OnPluginStart() {
 
-    RegConsoleCmd("sm_sb", Command_HiddenSpectate);
+    RegConsoleCmd("sm_hide", Command_HiddenSpectate);
     HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
 }
 
 public OnMapStart() {
-	int iIndex = FindEntityByClassname(MaxClients + 1, "cs_player_manager");
-	if (iIndex == -1) {
-		SetFailState("Unable to find tf_player_manager entity");
-	}
-	
-	SDKHook(iIndex, SDKHook_ThinkPost, Hook_OnThinkPost);
+	SDKHook(GetPlayerResourceEntity(), SDKHook_ThinkPost, Hook_OnThinkPost);
 }
 
 public OnClientPutInServer(iClient) {
@@ -86,15 +80,14 @@ public Action Event_PlayerTeam(Handle hEvent, const char[] szEventName, bool bDo
 	return Plugin_Continue;
 }
 
-public Hook_OnThinkPost(iEnt) {
+public Hook_OnThinkPost(int iEnt) {
 	static iConnectedOffset = -1;
 	if (iConnectedOffset == -1) {
 		iConnectedOffset = FindSendPropInfo("CCSPlayerResource", "m_bConnected");
 	}
     
 	int iConnected[65];
-	GetEntDataArray(iEnt, iConnectedOffset, iConnected, MaxClients + 1);
-    
+	GetEntDataArray(iEnt, iConnectedOffset, iConnected, MaxClients + 1);  
 	for (int i = 1; i <= MaxClients; i++) {
 		if (g_bIsHiding[i]) {
 			iConnected[i] = 0;
