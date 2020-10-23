@@ -96,6 +96,7 @@ public void OnGiveNamedItemPost(int client, const char[] classname, const CEconI
 	//再这里重构武器皮肤|Attach 贴纸等等
 	PTaH_ForceFullUpdate(client);
 	//如果有贴纸 打开贴纸修改菜单。。。。
+	OPP(client);
 }
 
 void OPP(int client)
