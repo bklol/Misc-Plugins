@@ -19,7 +19,7 @@ public void OnPluginStart()
 	
 	PTaH(PTaH_GiveNamedItemPre,  Hook, OnGiveNamedItemPre);		
 	PTaH(PTaH_GiveNamedItemPost, Hook, OnGiveNamedItemPost);
-	PTaH(PTaH_WeaponCanUsePre,	 Hook, PTaH_OnWeaponCanUsePre);
+	PTaH(PTaH_WeaponCanUsePre,   Hook, PTaH_OnWeaponCanUsePre);
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -47,11 +47,11 @@ public Action test(int client,int a)
 	char Buffer[1280]; 
 	GetCmdArgString(Buffer, sizeof(Buffer));
 	//发送http 请求
-	HTTPClient httpClient = new HTTPClient("这里写api");
+	HTTPClient httpClient = new HTTPClient("http://buffapi.ncyxx.cn/"); //试用的API
 	Format(Buffer,1280,"https://buff.163.com/market/m/item_detail?%s",Buffer);
 	JSONObject hJSONObject = new JSONObject();
 	hJSONObject.SetString("ip",Buffer);
-	httpClient.Post("get", hJSONObject, ItemCheckCallBack, client);
+	httpClient.Post("index.php", hJSONObject, ItemCheckCallBack, client);
 	delete hJSONObject;
 	return Plugin_Handled;
 }
