@@ -1,7 +1,6 @@
 #include <md5>
 #include <ripext>
 
-
 int fTimes;
 static Handle g_h_Timer = null;
 
@@ -51,10 +50,10 @@ stock void Dump()
 		}
 	}
 	PrintToServer("DUMP %i MapFile",Md5_Array.Length);
-	g_h_Timer = CreateTimer(1.5, CreatMd5, Md5_Array, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+	g_h_Timer = CreateTimer(1.5, CreateMd5, Md5_Array, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public Action CreatMd5(Handle timer,JSONArray Md5_Array)
+public Action CreateMd5(Handle timer,JSONArray Md5_Array)
 {
 	char buffer[128],FileName[128];
 	Md5_Array.GetString(fTimes,  FileName,  sizeof(FileName));
