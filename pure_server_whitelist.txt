@@ -1,0 +1,11 @@
+whitelist
+{
+	shaders\...										allow_from_disk
+	materials\...									allow_from_disk
+	models\...										allow_from_disk
+	sound\...										allow_from_disk
+	scripts\...										allow_from_disk
+	particles\...									allow_from_disk
+	scripts\items\items_game_live.txt				allow_from_disk
+	materials\models\player\custom_player\...		check_crc
+}
